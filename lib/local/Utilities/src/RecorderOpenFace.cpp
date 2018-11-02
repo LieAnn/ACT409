@@ -363,6 +363,7 @@ void RecorderOpenFace::WriteObservation()
 	}
 
 	// Write aligned faces
+	/*
 	if (params.outputAlignedFaces())
 	{
 
@@ -406,7 +407,7 @@ void RecorderOpenFace::WriteObservation()
 		aligned_face = cv::Mat();
 
 	}
-
+	*/
 }
 
 void RecorderOpenFace::WriteObservationTracked()

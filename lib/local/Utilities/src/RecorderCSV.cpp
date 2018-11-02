@@ -84,7 +84,7 @@ bool RecorderCSV::Open(std::string output_file_name, bool is_sequence, bool outp
 	{
 		output_file << "face, confidence";
 	}
-
+	/*
 	if (output_gaze)
 	{
 		output_file << ", gaze_0_x, gaze_0_y, gaze_0_z, gaze_1_x, gaze_1_y, gaze_1_z, gaze_angle_x, gaze_angle_y";
@@ -154,7 +154,7 @@ bool RecorderCSV::Open(std::string output_file_name, bool is_sequence, bool outp
 			output_file << ", p_" << i;
 		}
 	}
-
+	*/
 	if (output_AUs)
 	{
 		std::sort(this->au_names_reg.begin(), this->au_names_reg.end());
@@ -168,6 +168,11 @@ bool RecorderCSV::Open(std::string output_file_name, bool is_sequence, bool outp
 		{
 			output_file << ", " << class_name << "_c";
 		}
+	}
+
+	//For Face Expression
+	for (int i = 1; i < 22; i++) {
+		output_file << ", " << "FE" << std::to_string(i);
 	}
 
 	output_file << std::endl;
@@ -207,6 +212,7 @@ void RecorderCSV::WriteLine(int face_id, int frame_num, double time_stamp, bool 
 		output_file << face_id << ", " << landmark_confidence;
 	}
 	// Output the estimated gaze
+	/*
 	if (output_gaze)
 	{
 		output_file << std::setprecision(6);
@@ -290,7 +296,7 @@ void RecorderCSV::WriteLine(int face_id, int frame_num, double time_stamp, bool 
 			output_file << ", " << lmk;
 		}
 	}
-
+	*/
 	if (output_AUs)
 	{
 
@@ -336,6 +342,77 @@ void RecorderCSV::WriteLine(int face_id, int frame_num, double time_stamp, bool 
 			{
 				output_file << ", 0";
 			}
+		}
+
+		/* FE
+		01 Happy 12, 25 [6 (51%)]
+		02 Sad 4, 15 [1 (60%), 6 (50%), 11 (26%), 17 (67%)]
+		03 Fearful 1, 4, 20, 25 [2 (57%), 5 (63%), 26 (33%)]
+		04 Angry 4, 7, 24 [10 (26%), 17 (52%), 23 (29%)]
+		05 Surprised 1, 2, 25, 26 [5 (66%)]
+		06 Disgusted 9, 10, 17 [4 (31%), 24 (26%)]
+		07 Happily surprised 1, 2, 12, 25 [5 (64%), 26 (67%)]
+		08 Happily disgusted 10, 12, 25 [4 (32%), 6 (61%), 9 (59%)]
+		09 Sadly fearful 1, 4, 20, 25 [2 (46%), 5 (24%), 6 (34%), 15 (30%)]
+		10 Sadly angry 4, 15 [6 (26%), 7 (48%), 11 (20%), 17 (50%)]
+		11 Sadly surprised 1, 4, 25, 26 [2 (27%), 6 (31%)]
+		12 Sadly disgusted 4, 10 [1 (49%), 6 (61%), 9 (20%), 11 (35%), 15 (54%), 17 (47%), 25 (43%)*]
+		13 Fearfully angry 4, 20, 25 [5 (40%), 7 (39%), 10 (30%), 11 (33%)*]
+		14 Fearfully surprised 1, 2, 5, 20, 25 [4 (47%), 10 (35%)*, 11 (22%)*, 26 (51%)]
+		15 Fearfully disgusted 1, 4, 10, 20, 25 [2 (64%), 5 (50%), 6 (26%)*, 9 (28%), 15 (33%)*]
+		16 Angrily surprised 4, 25, 26 [5 (35%), 7 (50%), 10 (34%)]
+		17 Angrily disgusted 4, 10, 17 [7 (60%), 9 (57%), 24 (36%)]
+		18 Disgustedly surprised 1, 2, 5, 10 [4 (45%), 9 (37%), 17 (66%), 24 (33%)]
+		19 Appalled 4, 10, [6 (25%)*, 9 (56%), 17 (67%), 24 (36%)]
+		20 Hatred 4, 10, [7 (57%), 9 (27%), 17 (63%), 24 (37%)]
+		21 Awed 1, 2, 5, 25, [4 (21%), 20 (62%), 26 (56%)]	 */
+
+		std::vector< std::pair<std::string, std::vector<int> >> FEAUmatch;
+		
+		int arr01[] = { 12, 25 }; int arr02[] = { 4, 15 }; int arr03[] = { 1,4,20,25 };
+		int arr04[] = { 4,7,24 }; int arr05[] = { 1,2,25,26}; int arr06[] = {  9,10,17};
+		int arr07[] = {  1,2,12,25}; int arr08[] = {  10,12,25}; int arr09[] = { 1,4,20,25 };
+		int arr10[] = { 4,15 }; int arr11[] = { 1,4,25,26 }; int arr12[] = { 4,10};
+		int arr13[] = { 4,20,25 }; int arr14[] = { 1,2,5,20,25}; int arr15[] = { 1,4,10,20,25};
+		int arr16[] = { 4,25,26}; int arr17[] = { 4,10,17 }; int arr18[] = { 1,2,5,10 };
+		int arr19[] = { 4,10 }; int arr20[] = { 4,10 }; int arr21[] = { 1,2,5,25 };
+
+		int * FEAUarr[] = {arr01,arr02,arr03,arr04,arr05,arr06,arr07,arr08,
+			arr09,arr10,arr11,arr12,arr13,arr14,arr15,arr16,arr17,arr18,arr19,arr20,arr21};
+
+		int i = 1;
+		for (auto arr : FEAUarr) {
+			std::vector<int> AUs(arr, arr + sizeof(arr) / sizeof(arr[0]));
+			FEAUmatch.push_back(std::make_pair(std::to_string(i), AUs));
+			i++;
+		}
+
+		for (auto match : FEAUmatch) {
+			int matched = 0;
+			for (int AUname : match.second) {
+				for (auto au_class : au_occurences) {
+					std::string aunamestr;
+					if (AUname < 10) {
+						aunamestr = "AU0" + std::to_string(AUname);
+					}
+					else {
+						aunamestr = "AU" + std::to_string(AUname);
+					}
+					//std::cout << "au_class. first : " << au_class.first << std::endl;
+					//std::cout << "aunamestr : " << aunamestr << std::endl;
+					if (aunamestr.compare(au_class.first) == 0) {
+						matched = matched + au_class.second;
+						break;
+					}
+				}
+			}
+			if (matched == match.second.size()) {
+				matched = 1;
+			}
+			else {
+				matched = 0;
+			}
+			output_file << ", " << matched;
 		}
 	}
 	output_file << std::endl;
