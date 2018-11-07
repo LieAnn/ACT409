@@ -38,6 +38,8 @@ csvfile = open(csvfilename, 'w')
 csvfile.write("frame,LMean,LStd,AMean,AStd,BMean,BStd\n");
 
 framenum = 1
+length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+progress = 0
 
 while (1):
     ret, frame = cap.read()
@@ -52,6 +54,13 @@ while (1):
 
     framenum = framenum + 1
     if cv2.waitKey(1) & 0xff == ord('q'):
+        break
+
+    if int(100 * framenum / length) > progress:
+        progress = progress + 10
+        print(str(progress) + "% ")
+
+    if framenum == length:
         break
 
 cap.release()
