@@ -2,7 +2,7 @@
 import numpy as np
 import cv2
 
-def color_transfer(source, target, clip=True, preserve_paper=True):
+def color_transfer(sourceStat, target, clip=True, preserve_paper=True):
 	"""
 	Transfers the color distribution from the source to the target
 	image using the mean and standard deviations of the L*a*b*
@@ -38,11 +38,11 @@ def color_transfer(source, target, clip=True, preserve_paper=True):
 	# convert the images from the RGB to L*ab* color space, being
 	# sure to utilizing the floating point data type (note: OpenCV
 	# expects floats to be 32-bit, so use that instead of 64-bit)
-	source = cv2.cvtColor(source, cv2.COLOR_BGR2LAB).astype("float32")
+	#source = cv2.cvtColor(source, cv2.COLOR_BGR2LAB).astype("float32")
 	target = cv2.cvtColor(target, cv2.COLOR_BGR2LAB).astype("float32")
 
 	# compute color statistics for the source and target images
-	(lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc) = image_stats(source)
+	(lMeanSrc, lStdSrc, aMeanSrc, aStdSrc, bMeanSrc, bStdSrc) = sourceStat
 	(lMeanTar, lStdTar, aMeanTar, aStdTar, bMeanTar, bStdTar) = image_stats(target)
 
 	# subtract the means from the target image
