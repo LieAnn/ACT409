@@ -32,6 +32,8 @@ You can run an example file in *example/* directory by
 and it will generate an *output.mp4* file.
 
 # 3. Use OpenFace to get csv file
+If you want to see how it works, you can try following instructions.
+
     FaceLandmakrVidMulti.exe -f path/to/the/video/file
 
 or
