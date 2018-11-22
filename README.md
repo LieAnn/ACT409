@@ -36,7 +36,7 @@ and it will generate an *output.mp4* file.
 
 or
 
-    bash/getCSVfromVid.sh path/to/the/video/file
+    bash bin/getCSVfromVid.sh path/to/the/video/file
 
 The result csv file will be in *processed/* directory.
 
