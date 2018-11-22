@@ -55,7 +55,7 @@ sadStat = image_stats(sadSrc)
 
 font                   = cv2.FONT_HERSHEY_SIMPLEX
 textloc = (10,50)
-fontScale              = 0.5
+fontScale              = 1
 fontColor              = (255,255,255)
 lineType               = 2
 
@@ -104,7 +104,7 @@ while (targetvid.isOpened()):
         if fe is not '0':
             feidx = idx
             fev = fe
-    if float(fev) <= 0.75:
+    if float(fev) <= 0.7:
         feidx = 6
     else:
         fev = str (int(float(fev) / 5 * 100)) + "%"
