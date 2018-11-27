@@ -1,59 +1,10 @@
-/****************************************************************************
-**
-** Copyright (C) 2017 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the documentation of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 function dbInit()
 {
     var db = LocalStorage.openDatabaseSync("ACT_DB", "1,0", "save data", 1000000)
     try {
         db.transaction(function (tx) {
             tx.executeSql('CREATE TABLE IF NOT EXISTS Project (ProjectName string,ProjectMode int,SourceFile string)')
+            
         })
     } catch (err) {
         console.log("Error creating table in database: " + err)
@@ -76,11 +27,31 @@ function dbProjectSet(Pname, Pmode){
     var rowid = 0;
     db.transaction(function (tx) {
         tx.executeSql('INSERT INTO Project VALUES(?, ?,?)',
-                      [Pname, Pmode,"a"])
+                      [Pname, Pmode,""])
         var result = tx.executeSql('SELECT last_insert_rowid()')
         rowid = result.insertId
     })
     return rowid;
+}
+function dbVideoSet(Pfile){
+    var db = dbInit()
+    db.transaction(function (tx) {
+        tx.executeSql('update Project set SourceFile=? where rowid = ?', [Pfile, 0])
+        var result = tx.executeSql('SELECT last_insert_rowid()')
+
+    })
+
+}
+
+function dbImageSet(Pfile,rowid){
+    var db = dbInit()
+    var arr =  [' Happy','Sad','Angry','Suprised','Fearful','Disgusted']
+    db.transaction(function (tx) {
+        tx.executeSql('update Project set ProjectName=? SourceFile=? where rowid = ?', [arr[rowid-1],Pfile, rowid])
+        var result = tx.executeSql('SELECT last_insert_rowid()')
+
+    })
+
 }
 
 function dbProjectName(){
@@ -88,10 +59,10 @@ function dbProjectName(){
     var rowid = 0;
     var ProjectName = ""
     db.transaction(function (tx) {
-         ProjectName = tx.executeSql('SELECT ProjectName FROM Project').rows.item(0).ProjectName
+        ProjectName = tx.executeSql('SELECT ProjectName FROM Project').rows.item(0).ProjectName
 
     })
-console.log(ProjectName)
+    console.log(ProjectName)
     return ProjectName;
 }
 
@@ -102,19 +73,53 @@ function dbProjectMode(){
     var rowid = 0;
     var ProjectMode = ""
     db.transaction(function (tx) {
-         ProjectMode = tx.executeSql('SELECT ProjectMode FROM Project').rows.item(0).ProjectMode
+        ProjectMode = tx.executeSql('SELECT ProjectMode FROM Project').rows.item(0).ProjectMode
 
     })
-console.log(ProjectMode)
+    console.log(ProjectMode)
     return ProjectMode;
 }
 
-function dbInsert(Pfile){
+
+function dbProjectVideo(){
+    var db = dbGetHandle()
+    var rowid = 0;
+    var ProjectVideo = ""
+    db.transaction(function (tx) {
+        ProjectVideo = tx.executeSql('SELECT SourceFile FROM Project').rows.item(0).SourceFile
+
+    })
+    console.log(ProjectVideo)
+    return ProjectVideo;
+}
+
+
+
+function dbSFile(Prowid)
+{
+    var db = dbGetHandle()
+    var SFile = ""
+    try {
+        db.transaction(function (tx) {
+            var result = tx.executeSql('SELECT SourceFile FROM Project')
+            var data = result.rows.item(Prowid)
+            SFile = data.SourceFile
+        })
+    }catch (err) {
+        console.log("Error creating table in database: " + err)
+    };
+    console.log(SFile)
+    return SFile;
+}
+
+
+
+function dbInsert(PEmotion, Pfile){
     var db = dbGetHandle()
     var rowid = 0;
     db.transaction(function (tx) {
         tx.executeSql('INSERT INTO Project VALUES(?, ?,?)',
-                      ["NULL", "NULL",Pfile])
+                      ["NULL", PEmotion,Pfile])
         var result = tx.executeSql('SELECT last_insert_rowid()')
         rowid = result.insertId
     })
@@ -132,25 +137,40 @@ function dbReadAll()
             console.log("pName : " + results.rows.item(i).ProjectName)
             console.log("pMode : " + results.rows.item(i).ProjectMode)
             console.log("pFile : " + results.rows.item(i).SourceFile)
-                             }
+           
         }
+    }
     )
 }
 
-function dbUpdate(Prowid, Pfile)
+
+function dbFileId()
 {
     var db = dbGetHandle()
     db.transaction(function (tx) {
-        tx.executeSql(
-                    'update Project set ProjectName=?, ProjectMode=?, SourceFile=? where rowid = ?', [NULL, NULL, Pfile, Prowid])
+        var results = tx.executeSql(
+                    'SELECT rowid,SourceFile FROM Project order by rowid desc')
+        listModel.clear();
+        for (var i = 0; i < results.rows.length -1; i++) {
+            listModel.append({
+                                 id: results.rows.item(i).rowid - 1,
+                                 title: results.rows.item(i).SourceFile,
+                             
+                             })
+        }
     })
 }
+
+
+
+
 
 function dbDeleteRow(Prowid)
 {
     var db = dbGetHandle()
+
     db.transaction(function (tx) {
-        tx.executeSql('delete from trip_log where rowid = ?', [Prowid])
+        tx.executeSql('delete from Project where rowid = ?', [Prowid])
     })
 }
 
@@ -162,7 +182,7 @@ function dbQuit()
             tx.executeSql('DROP TABLE Project')
         })
     } catch (err) {
-        console.log("Error dropping table in database: " + err)
+        console.log("Error dropping table Project in database: " + err)
     };
 
 }

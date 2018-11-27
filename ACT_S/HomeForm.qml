@@ -13,13 +13,30 @@ ApplicationWindow {
     height: 480
     title: JS.dbProjectName()
 
+    header: Button{
+        id: end_setting
+        x: 510
+        width: 120
+        height: 45
+        text: qsTr("end setting")
+        onClicked: {
+            if(JS.dbProjectMode()===1){
+                var component = Qt.createComponent("SetColor.qml");
+            }
+            else
+                component = Qt.createComponent("StandBy.qml");
+            win = component.createObject()
+            win.show();
 
+        }
+
+    }
     StackLayout  {
         id: swipeView
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 
-        Page1Form {} Page2Form {}
+        Page1Form {}
 
 
     }
@@ -31,9 +48,7 @@ ApplicationWindow {
                      TabButton {
                          text: qsTr("Import video")
                      }
-                     TabButton {
-                         text: qsTr("select color sense")
-                     }
+
 
 
     }
