@@ -32,28 +32,40 @@ function dbProjectSet(Pname, Pmode){
                       [Pname, Pmode,""])
         var result = tx.executeSql('SELECT last_insert_rowid()')
         rowid = result.insertId
+        for (var i = 0; i < 20; i++) {
+            tx.executeSql('INSERT INTO Project VALUES(?, ?,?)',  ["0", "0","0"])
+            result = tx.executeSql('SELECT last_insert_rowid()')
+        }
+
     })
     return rowid;
 }
 
-function dbReadAll()
-{
-    var db = dbGetHandle()
-    db.transaction(function (tx) {
-        var results = tx.executeSql(
-                    'SELECT rowid,ProjectName,ProjectMode,SourceFile FROM Project order by rowid desc')
-        for (var i = 0; i < results.rows.length; i++) {
-            console.log("row id : " + results.rows.item(i).rowid)
-            console.log("pName : " + results.rows.item(i).ProjectName)
-            console.log("pMode : " + results.rows.item(i).ProjectMode)
-            console.log("pFile : " + results.rows.item(i).SourceFile)
 
-        }
-    }
-    )
+
+function dbVideoSet(Vfile){
+    var db = dbGetHandle()
+
+    db.transaction(function (tx) {
+        tx.executeSql('update Project set SourceFile=? where rowid = 1', [Vfile])
+    })
+
 }
 
 
+
+function dbEmotionSet(index,Ename,Efile){
+    var db = dbGetHandle()
+
+    db.transaction(function (tx) {
+        tx.executeSql('update Project set ProjectName=?, SourceFile=? where rowid=?',
+                      [Ename,Efile,index])
+    })
+
+}
+
+
+///////////////////////////
 
 function dbProjectName(){
     var db = dbGetHandle()
@@ -82,6 +94,81 @@ function dbProjectMode(){
     return ProjectMode;
 }
 
+
+function dbProjectVideo(){
+    var db = dbGetHandle()
+    var rowid = 0;
+    var ProjectVideo = ""
+    db.transaction(function (tx) {
+        ProjectVideo = tx.executeSql('SELECT SourceFile FROM Project').rows.item(0).SourceFile
+
+    })
+    console.log(ProjectVideo)
+    return ProjectVideo;
+}
+
+
+function dbVFile(Prowid)
+{
+    var db = dbGetHandle()
+    var VFile = ""
+    try {
+        db.transaction(function (tx) {
+
+            var result = tx.executeSql('SELECT SourceFile FROM Project')
+            var data = result.rows.item(0)
+            VFile = data.SourceFile
+        })
+    }catch (err) {
+        console.log("Error in VFILE: " + err)
+    };
+    console.log("video file is " + VFile)
+    return VFile;
+}
+
+
+
+
+
+function dbFileId()
+{
+    var db = dbGetHandle()
+    var ID= new Array()
+    db.transaction(function (tx) {
+        var results = tx.executeSql(
+                    'SELECT rowid,ProjectName,SourceFile FROM Project order by rowid desc')
+        try{
+
+            for (var i = 0; i < results.rows.length -1; i++) {
+                if(results.rows.item(i).ProjectName !== 0){
+                    ID.push('["'+results.rows.item(i).ProjectName+'","'+results.rows.item(i).SourceFile+'"]')}
+            }
+        }
+        catch(err){
+            console.log("listmodel" + err)
+        };
+    })
+    return ID
+}
+
+
+
+function dbReadAll()
+{
+    var db = dbGetHandle()
+    db.transaction(function (tx) {
+        var results = tx.executeSql(
+                    'SELECT rowid,ProjectName,ProjectMode,SourceFile FROM Project order by rowid desc')
+        for (var i = 0; i < results.rows.length; i++) {
+            console.log("row id : " + results.rows.item(i).rowid)
+            console.log("pName : " + results.rows.item(i).ProjectName)
+            console.log("pMode : " + results.rows.item(i).ProjectMode)
+            console.log("pFile : " + results.rows.item(i).SourceFile)
+
+        }
+    }
+    )
+}
 
 
 function dbQuit()

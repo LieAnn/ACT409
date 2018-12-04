@@ -1,8 +1,10 @@
 
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import QtQuick.LocalStorage 2.0
 import QtQuick.Layouts 1.11
+
+import QtQuick.Dialogs 1.1
+
 
 import QtQuick.LocalStorage 2.0
 import "Database.js" as JS
@@ -15,6 +17,23 @@ ApplicationWindow {
     height: 480
     title: JS.dbProjectName() + JS.dbProjectMode()
 
+    function saveFile(fileUrl, text) {
+        var request = new XMLHttpRequest();
+        request.open("PUT", fileUrl, false);
+        request.send(text);
+        return request.status;
+    }
+
+    FileDialog {
+        id: saveFileDialog
+        selectExisting: false
+        // visible:true
+        folder:""
+        nameFilters: ["Text files (*.txt)", "All files (*)"]
+        onAccepted: saveFile(saveFileDialog.fileUrl, textEdit.text)
+    }
+
+
 
     header: Button{
         id: end_setting
@@ -24,10 +43,31 @@ ApplicationWindow {
         text: qsTr("end setting")
         onClicked: {
 
-
+            saveFileDialog.open()
+            JS.dbReadAll()
+            JS.dbProjectVideo()
+            textEdit.text =   '{"ProjectName":"'+JS.dbProjectName()
+                    +'","ProjectMode":"'+JS.dbProjectMode()
+                    +'","SourceFile":['+JS.dbFileId()
+                    +']'
+                    +',"VideoFile":"'+JS.dbProjectVideo()
+                    +'"}'
         }
 
     }
+
+
+
+        Label {
+            id: textEdit
+            anchors.fill: parent
+            text:""
+
+            visible: false
+        }
+
+
+
     SwipeView {
         id: swipeView
         anchors.fill: parent

@@ -1,7 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.1
-import QtMultimedia 5.8
 
 
 import QtQuick.LocalStorage 2.0
@@ -21,14 +20,15 @@ Page {
             console.log("Accepted: " + fileUrl)
 
             listModel.setProperty(grid.currentIndex, "title", fileUrl.toString())
-
-           }
+            JS.dbEmotionSet(grid.currentIndex + 3, listModel.get(grid.currentIndex).emotion, fileUrl)
+            JS.dbReadAll()
+        }
 
         onRejected: { console.log("Rejected") }
     }
 
 
-    header:  Button {
+   header: Button {
         x: 0
         width: 120
         height: 45
@@ -55,12 +55,12 @@ Page {
                 width: 250
                 height: 200
                 MouseArea {
-                                anchors.fill: parent
-                                onClicked: {grid.currentIndex = index
+                    anchors.fill: parent
+                    onClicked: {grid.currentIndex = index
 
-                                    console.log(index)
-                               }
-                            }
+                        console.log(index)
+                    }
+                }
                 radius: 10
                 border.color: "#F48FB1";
                 color: GridView.isCurrentItem ? "#E91E63" : "transparent"

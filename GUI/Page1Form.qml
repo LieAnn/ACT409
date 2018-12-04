@@ -3,6 +3,10 @@ import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.1
 import QtMultimedia 5.8
 
+import QtQuick.LocalStorage 2.0
+import "Database.js" as JS
+
+
 Page {
     width: 600
     height: 400
@@ -17,7 +21,9 @@ Page {
         onAccepted: {
             console.log("Accepted: " + fileUrl)
             mediaplayer.source = fileUrl
-           }
+            JS.dbVideoSet(fileUrl)
+            JS.dbReadAll()
+        }
 
         onRejected: { console.log("Rejected") }
     }
@@ -35,8 +41,10 @@ Page {
 
     VideoOutput{
         id: video
-        width : 400
-        height : 300
+        x: 60
+        y: 20
+        width : 480
+        height : 360
         source: mediaplayer
 
 
@@ -53,7 +61,7 @@ Page {
 
 
 
-    header:  Button {
+    Button {
         x: 0
         width: 120
         height: 45
@@ -64,7 +72,7 @@ Page {
     }
 
     Label {
-        text: qsTr("You are on Page 1.")
+        text: qsTr("Choose the video for the color transformation by clicking the open button")
         anchors.centerIn: parent
     }
 }
