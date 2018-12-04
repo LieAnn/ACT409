@@ -63,6 +63,7 @@ Window {
         width: 140
         height: 45
         text: qsTr("Create Project")
+        property variant win;
         onClicked: { console.log("pressed")
             JS.dbQuit()
             JS.dbProjectSet(textField.text,
@@ -80,7 +81,6 @@ Window {
 
             win = component.createObject()
             win.show();
-
         }
     }
 }

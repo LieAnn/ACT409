@@ -32,12 +32,14 @@ targetvid = cv2.VideoCapture(args["target"])
 sourceDir = args["source"] 
 csvfile = open(args["csv"], 'r')
 csvfile.readline()
-fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+fourcc = cv2.VideoWriter_fourcc(*'MPEG')
 fps = targetvid.get(cv2.CAP_PROP_FPS)
+print("fps is " + str(fps))
 res = (int(targetvid.get(cv2.CAP_PROP_FRAME_WIDTH)), int(targetvid.get(cv2.CAP_PROP_FRAME_HEIGHT)) * 2)
-out = cv2.VideoWriter('output.mp4', fourcc, fps, res)
+out = cv2.VideoWriter('output.avi', fourcc, fps, res)
 
 totalFrame = int(targetvid.get(cv2.CAP_PROP_FRAME_COUNT))
+print("total number of frames is " + str(totalFrame))
 angrySrc = cv2.cvtColor(cv2.imread(sourceDir + "angry.jpg"),cv2.COLOR_BGR2LAB).astype("float32")
 disgustedSrc = cv2.cvtColor(cv2.imread(sourceDir + "disgusted.jpg"),cv2.COLOR_BGR2LAB).astype("float32")
 sadSrc = cv2.cvtColor(cv2.imread(sourceDir + "sad.jpg"),cv2.COLOR_BGR2LAB).astype("float32")
@@ -90,7 +92,7 @@ while (targetvid.isOpened()):
             break
     if len(line) <= 1:
         out.write(frame)
-        break
+        continue
 
     if processtimer < ((frameiter / totalFrame) * 100):
         print(str(processtimer) + "% ", end = "", flush = True)

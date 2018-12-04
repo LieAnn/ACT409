@@ -1,6 +1,7 @@
 import sys
 
 csvfilename = sys.argv[1]
+print(sys.argv[1])
 csvfile = open(csvfilename,'r')
 newfilename = csvfilename[:csvfilename.rfind('.')] + "_FE2.csv"
 newfile = open(newfilename,'w')

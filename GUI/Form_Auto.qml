@@ -24,14 +24,6 @@ ApplicationWindow {
         return request.status;
     }
 
-    FileDialog {
-        id: saveFileDialog
-        selectExisting: false
-        // visible:true
-        folder:""
-        nameFilters: ["Text files (*.txt)", "All files (*)"]
-        onAccepted: saveFile(saveFileDialog.fileUrl, textEdit.text)
-    }
 
 
 
@@ -41,9 +33,11 @@ ApplicationWindow {
         width: 120
         height: 45
         text: qsTr("end setting")
+        property string src : "";
+        property variant win;
         onClicked: {
 
-            saveFileDialog.open()
+
             JS.dbReadAll()
             JS.dbProjectVideo()
             textEdit.text =   '{"ProjectName":"'+JS.dbProjectName()
@@ -52,19 +46,24 @@ ApplicationWindow {
                     +']'
                     +',"VideoFile":"'+JS.dbProjectVideo()
                     +'"}'
+
+            var component = Qt.createComponent("StandBy.qml");
+
+            win = component.createObject()
+            win.show();
         }
 
     }
 
 
 
-        Label {
-            id: textEdit
-            anchors.fill: parent
-            text:""
+    Label {
+        id: textEdit
+        anchors.fill: parent
+        text:""
 
-            visible: false
-        }
+        visible: false
+    }
 
 
 

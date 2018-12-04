@@ -41,7 +41,6 @@ ApplicationWindow {
         text: qsTr("end setting")
         onClicked: {
 
-            saveFileDialog.open()
             JS.dbReadAll()
             JS.dbProjectVideo()
             textEdit.text =   '{"ProjectName":"'+JS.dbProjectName()
@@ -50,6 +49,12 @@ ApplicationWindow {
                     +']'
                     +',"VideoFile":"'+JS.dbProjectVideo()
                     +'"}'
+
+            var component = Qt.createComponent("StandBy.qml");
+
+            win = component.createObject()
+            win.show();
+
         }
 
     }

@@ -133,7 +133,7 @@ function dbVFile(Prowid)
 function dbFileId()
 {
     var db = dbGetHandle()
-    var ID= new Array()
+    var ID= ""
     db.transaction(function (tx) {
         var results = tx.executeSql(
                     'SELECT rowid,ProjectName,SourceFile FROM Project order by rowid desc')
@@ -141,13 +141,17 @@ function dbFileId()
 
             for (var i = 0; i < results.rows.length -1; i++) {
                 if(results.rows.item(i).ProjectName !== 0){
-                    ID.push('["'+results.rows.item(i).ProjectName+'","'+results.rows.item(i).SourceFile+'"]')}
+                    console.log("Javascript file Id is" + results.rows.item(i).SourceFile)
+                    ID = ID + (results.rows.item(i).SourceFile+'?')
+                     console.log("concat ID is :" + ID)
+                }
             }
         }
         catch(err){
             console.log("listmodel" + err)
         };
     })
+    console.log("ID is :" + ID)
     return ID
 }
 

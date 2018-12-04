@@ -96,9 +96,18 @@ Page {
             title: ""
         }
         ListElement {
-            emotion: "Neutural"
+            emotion: "Fearful"
             title: ""
         }
+        ListElement {
+            emotion: "Disgusted"
+            title: ""
+        }
+        ListElement {
+            emotion: "Angry"
+            title: ""
+        }
+
     }
 
 
